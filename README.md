@@ -17,7 +17,7 @@
 
 > **🛡️ Stop incomplete records and prevent data degradation across critical Filament actions.**
 
-**Filament ActionGuard** is an enterprise-grade preflight gatekeeper and state invariant defense plugin for **Filament**. It prevents incomplete, invalid, or corrupted records from being published, approved, or transitioned into critical lifecycle states.
+**Filament ActionGuard** is a production-grade preflight gatekeeper and state invariant defense plugin for **Filament**. It prevents incomplete, invalid, or corrupted records from being published, approved, or transitioned into critical lifecycle states.
 
 ---
 
@@ -61,7 +61,6 @@ ActionGuard introduces a robust **Two-Phase Invariant Defense System**:
   - `RelationshipCheck`: Verifies loaded relationships (e.g. belongs-to, has-many).
   - `MediaCheck`: Checks media collections (Spatie MediaLibrary or file upload paths).
   - `CallbackCheck`: Flexible check with full `CheckResult` control.
-- ⚡️ **Dual-Mode Enterprise Bridge (Coming Soon):** Works 100% standalone out-of-the-box (Community Edition), with seamless integration for `allgorithm/business-core` Domain Operation Descriptors coming soon.
 - 🌍 **Fully Localized (i18n):** Complete English and German translations included out-of-the-box.
 - 💎 **Bulletproof Quality:** PHPStan **Level 8** (0 errors), 100% PSR-12 code style, and 98 comprehensive Pest tests.
 
@@ -197,28 +196,6 @@ ActionGuardAction::make('publish')
 
 ---
 
-### 4. Dual-Mode Enterprise Bridge (`allgorithm/business-core`) *(Coming Soon)*
-
-> [!NOTE]
-> **Enterprise Bridge (Coming Soon)**: ActionGuard is 100% functional standalone out-of-the-box. The direct bridge to `allgorithm/business-core` (`^1.2`) is currently in final integration testing and will be officially unlocked with the upcoming commercial Enterprise release.
-
-The Community package has no dependency on BusinessCore. Once you install a compatible licensed `allgorithm/business-core` package (`^1.2`), ActionGuard will detect its contracts automatically without requiring application or adapter changes:
-
-```php
-use App\Domain\Operations\PublishProductOperation;
-
-ActionGuardAction::make('publish')
-    ->label('Publish Product')
-    ->operation(PublishProductOperation::class)
-    ->action(fn ($record) => $record->update(['status' => 'published']));
-```
-
-If `operation()` is invoked without the licensed Core, ActionGuard fails closed with a clear, descriptive `LogicException`. Direct Community integrations through `checks()` and `forState()` remain fully available and recommended.
-
-ActionGuard registers a safe default `OperationContextFactoryContract` for Community installations. A licensed BusinessCore package can replace this container binding from its service provider to supply its authoritative actor, role, permission, tenant, and organization context. This activation is automatic: existing applications and `operation()` calls require no changes. Internal Enterprise exceptions are logged with a correlation reference while UI messages remain free of implementation details.
-
----
-
 ## 🗂️ Built-in Checks Reference
 
 | Check Class | Evaluates | Example |
@@ -256,18 +233,6 @@ composer test
 # Run code style fixer and static analysis (PHPStan Level 8)
 composer lint
 ```
-
----
-
-## 🏛️ Architecture Comparison
-
-| Feature | `filament-actionguard` (This Plugin) | `allgorithm/business-core` (Enterprise Platform) |
-| :--- | :--- | :--- |
-| **Layer** | **Presentation Layer** (Filament UI Adapter) | **Domain & Application Layer** (Omnichannel Core) |
-| **License** | **MIT (Open Source)** | Commercial Enterprise License |
-| **Execution** | Preflight Action Modal & Model Post-Save Invariant | Omnichannel Guard Pipeline (API, Queue, CLI, UI) |
-| **Audit Trail** | UI Feedback & Notifications | Tamper-proof 8-W Audit Log with SHA-256 Hash Chain |
-| **Integration** | Native `operation()` & `forState()` bridge | Domain Operation Descriptors & Contracts |
 
 ---
 
