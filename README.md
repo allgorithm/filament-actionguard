@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://packagist.org/packages/allgorithm/filament-actionguard"><img src="https://img.shields.io/packagist/v/allgorithm/filament-actionguard.svg?style=flat-square&color=0ea5e9" alt="Latest Version on Packagist"></a>
-    <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2%20--%208.5-777BB4.svg?style=flat-square&logo=php&logoColor=white" alt="PHP 8.2 - 8.5"></a>
+    <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.3%20--%208.5-777BB4.svg?style=flat-square&logo=php&logoColor=white" alt="PHP 8.3 - 8.5"></a>
     <a href="https://filamentphp.com"><img src="https://img.shields.io/badge/Filament-v5.x-FDAE4B.svg?style=flat-square&logo=laravel&logoColor=white" alt="Filament v5"></a>
     <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-98%20Tests%20Passing-10b981.svg?style=flat-square&logo=pest" alt="Pest Tests"></a>
     <a href="https://phpstan.org"><img src="https://img.shields.io/badge/PHPStan-Level%208%20(0%20errors)-6366f1.svg?style=flat-square" alt="PHPStan Level 8"></a>
@@ -61,7 +61,7 @@ ActionGuard introduces a robust **Two-Phase Invariant Defense System**:
   - `RelationshipCheck`: Verifies loaded relationships (e.g. belongs-to, has-many).
   - `MediaCheck`: Checks media collections (Spatie MediaLibrary or file upload paths).
   - `CallbackCheck`: Flexible check with full `CheckResult` control.
-- ⚡️ **Dual-Mode Enterprise Bridge:** Works 100% standalone out-of-the-box (Community Edition), and connects seamlessly with `allgorithm/business-core` Domain Operation Descriptors.
+- ⚡️ **Dual-Mode Enterprise Bridge (Coming Soon):** Works 100% standalone out-of-the-box (Community Edition), with seamless integration for `allgorithm/business-core` Domain Operation Descriptors coming soon.
 - 🌍 **Fully Localized (i18n):** Complete English and German translations included out-of-the-box.
 - 💎 **Bulletproof Quality:** PHPStan **Level 8** (0 errors), 100% PSR-12 code style, and 98 comprehensive Pest tests.
 
@@ -197,9 +197,12 @@ ActionGuardAction::make('publish')
 
 ---
 
-### 4. Dual-Mode Enterprise Bridge (`allgorithm/business-core`)
+### 4. Dual-Mode Enterprise Bridge (`allgorithm/business-core`) *(Coming Soon)*
 
-The Community package has no dependency on BusinessCore. After purchasing and installing a compatible licensed `allgorithm/business-core` package (`^1.2`), ActionGuard detects its contracts automatically. Existing `operation()` integrations require no ActionGuard configuration or adapter changes:
+> [!NOTE]
+> **Enterprise Bridge (Coming Soon)**: ActionGuard is 100% functional standalone out-of-the-box. The direct bridge to `allgorithm/business-core` (`^1.2`) is currently in final integration testing and will be officially unlocked with the upcoming commercial Enterprise release.
+
+The Community package has no dependency on BusinessCore. Once you install a compatible licensed `allgorithm/business-core` package (`^1.2`), ActionGuard will detect its contracts automatically without requiring application or adapter changes:
 
 ```php
 use App\Domain\Operations\PublishProductOperation;
@@ -210,7 +213,7 @@ ActionGuardAction::make('publish')
     ->action(fn ($record) => $record->update(['status' => 'published']));
 ```
 
-If `operation()` is used without the licensed Core, ActionGuard fails closed with a clear `LogicException`. Direct Community integrations through `checks()` and `forState()` remain fully available. Enterprise guard failures, invalid descriptors, invalid guard contracts, context-construction errors, and unexpected result types also fail closed.
+If `operation()` is invoked without the licensed Core, ActionGuard fails closed with a clear, descriptive `LogicException`. Direct Community integrations through `checks()` and `forState()` remain fully available and recommended.
 
 ActionGuard registers a safe default `OperationContextFactoryContract` for Community installations. A licensed BusinessCore package can replace this container binding from its service provider to supply its authoritative actor, role, permission, tenant, and organization context. This activation is automatic: existing applications and `operation()` calls require no changes. Internal Enterprise exceptions are logged with a correlation reference while UI messages remain free of implementation details.
 
