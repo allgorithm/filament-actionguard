@@ -251,6 +251,20 @@ the optional data-minimised audit channel to your central logging system.
 
 ---
 
+## Privacy / Datenschutz
+
+Filament ActionGuard was designed with data minimisation in mind. The package
+does not transmit record data to external services and its optional audit events
+exclude model attributes, record IDs, actor IDs, and check messages by default.
+
+Whether a deployment complies with the GDPR / DSGVO depends on the operator's
+specific processing purposes, legal basis, access controls, logging and
+retention settings, hosting, privacy notice, and any required data-processing
+agreements. The operator remains responsible for assessing and documenting
+compliant use.
+
+---
+
 ## 📄 License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
