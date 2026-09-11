@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Safe structured resolution rendering with URL allow-listing, escaped labels, and reverse-tabnabbing protection.
 
 - **Enterprise CI/CD & Quality Assurance**
-  - Multi-version GitHub Actions test matrix (`run-tests.yml`) validating across PHP 8.2, 8.3, and 8.4 on `ubuntu-latest`.
+  - Multi-version GitHub Actions test matrix (`run-tests.yml`) validating across PHP 8.3 and 8.4 on `ubuntu-latest`.
   - Automated PHPStan static analysis workflow (`phpstan.yml`) enforcing **Level 8** compliance.
   - Automated Laravel Pint code style workflow (`fix-style.yml`) ensuring 100% PSR-12 standard compliance.
   - Dependabot automated weekly dependency monitoring (`dependabot.yml`) for Composer and GitHub Actions.
