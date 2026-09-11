@@ -1,0 +1,27 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Git Attributes for allgorithm/filament-actionguard
+# Exclude development, test, artwork, documentation, and container environments from export archives (Composer downloads)
+
+/.ai export-ignore
+/.github export-ignore
+/art export-ignore
+/artisan export-ignore
+/build export-ignore
+/docker export-ignore
+/docker-compose.yml export-ignore
+/docs export-ignore
+/public export-ignore
+/requirements export-ignore
+/storage export-ignore
+/tests export-ignore
+/workbench export-ignore
+.DS_Store export-ignore
+.env export-ignore
+.env.example export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+phpstan.neon export-ignore
+phpunit.xml.dist export-ignore
+testbench.yaml export-ignore

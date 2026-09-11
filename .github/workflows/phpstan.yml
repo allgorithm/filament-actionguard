@@ -1,0 +1,50 @@
+name: "PHPStan"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'src/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'phpstan.neon'
+      - '.github/workflows/phpstan.yml'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'src/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'phpstan.neon'
+      - '.github/workflows/phpstan.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpstan:
+    name: "PHPStan Level 8"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction --ansi
+
+      - name: Run PHPStan Analysis
+        run: vendor/bin/phpstan analyse --verbose --ansi --memory-limit=512M

@@ -1,0 +1,58 @@
+name: Bug report
+description: Create a report to help us improve Filament ActionGuard
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please provide as much detail as possible.
+  - type: input
+    id: filament-version
+    attributes:
+      label: Filament Version
+      description: What version of Filament are you using?
+      placeholder: "e.g. 5.8.1"
+    validations:
+      required: true
+  - type: input
+    id: laravel-version
+    attributes:
+      label: Laravel Version
+      description: What version of Laravel are you using?
+      placeholder: "e.g. 11.36.0 or 12.0.0"
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP Version
+      description: What PHP version are you running?
+      placeholder: "e.g. 8.3.15"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Steps or code snippet to reproduce the behavior.
+      placeholder: |
+        1. Setup ActionGuardAction on ...
+        2. Execute action with ...
+        3. See error ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true

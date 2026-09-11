@@ -1,0 +1,55 @@
+<?php
+
+namespace Allgorithm\FilamentActionGuard\Checks;
+
+use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
+use Allgorithm\FilamentActionGuard\Results\CheckResult;
+use Illuminate\Database\Eloquent\Model;
+
+class RequiredFieldCheck implements ActionGuardCheckContract
+{
+    public function __construct(
+        protected string $field,
+        protected ?string $label = null,
+        protected bool $required = true
+    ) {}
+
+    public static function make(string $field): self
+    {
+        return new self($field);
+    }
+
+    public function label(string $label): self
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    public function optional(): self
+    {
+        $this->required = false;
+
+        return $this;
+    }
+
+    public function evaluate(Model $record): CheckResult
+    {
+        $label = $this->label ?? (string) str($this->field)->headline();
+        $value = $record->getAttribute($this->field);
+
+        if ($value === null) {
+            return CheckResult::fail(
+                key: $this->field,
+                label: $label,
+                message: __('filament-actionguard::checks.required_field.message', ['field' => $label]),
+                required: $this->required
+            );
+        }
+
+        return CheckResult::pass(
+            key: $this->field,
+            label: $label
+        );
+    }
+}

@@ -1,0 +1,27 @@
+/vendor/
+/node_modules/
+.phpunit.result.cache
+.pest.cache
+.phpunit.cache/
+/build/
+/storage/
+/public/
+.env
+.env.backup
+.env.*.php
+*.log
+.DS_Store
+Thumbs.db
+/.idea/
+/.vscode/
+/actionguard-test-app/
+
+# AI Development Harness & Agents
+/.ai/
+
+# Internal Architecture Concepts & Strategy Documentation
+/docs/
+
+# Internal Requirements & Platform Specifications
+/requirements/
+

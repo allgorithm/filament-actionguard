@@ -1,0 +1,38 @@
+laravel: '@testbench'
+
+env:
+  - APP_KEY=base64:mwI8+tv+nFBfp+UiEtskdA471cijww4UZEwfIW/znbQ=
+  - SESSION_DRIVER=file
+  - CACHE_STORE=file
+
+providers:
+  - Allgorithm\FilamentActionGuard\ActionGuardServiceProvider
+  - Workbench\App\Providers\AdminPanelProvider
+
+migrations:
+  - workbench/database/migrations
+
+seeders:
+  - Workbench\Database\Seeders\DatabaseSeeder
+
+workbench:
+  start: '/admin/products'
+  user: 'admin@example.com'
+  install: true
+  health: false
+  discovers:
+    web: true
+    api: true
+    commands: true
+    components: false
+    factories: true
+    views: false
+  build:
+    - asset-publish
+    - create-sqlite-db
+    - db-wipe
+    - migrate-fresh
+    - db-seed:
+        --class: 'Workbench\Database\Seeders\DatabaseSeeder'
+  assets:
+    - laravel-assets

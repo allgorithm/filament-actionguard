@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+define('LARAVEL_START', microtime(true));
+
+// Silence PHP 8.5 deprecation notices originating from vendor packages (e.g., PDO::MYSQL_ATTR_SSL_CA)
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
+require __DIR__ . '/vendor/autoload.php';
+
+$workingPath = __DIR__;
+
+if (! defined('TESTBENCH_CORE')) {
+    define('TESTBENCH_CORE', true);
+}
+if (! defined('TESTBENCH_WORKING_PATH')) {
+    define('TESTBENCH_WORKING_PATH', $workingPath);
+}
+
+$config = Orchestra\Testbench\Foundation\Config::loadFromYaml(
+    workingPath: $workingPath,
+    defaults: [
+        'providers' => [],
+        'dont-discover' => [],
+    ],
+);
+
+$commander = new Orchestra\Testbench\Console\Commander($config, $workingPath);
+
+$status = $commander->handle();
+
+exit(is_int($status) ? $status : 0);
