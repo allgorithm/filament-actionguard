@@ -9,8 +9,10 @@ use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Exceptions\StateInvariantViolationException;
 use Allgorithm\FilamentActionGuard\Results\ActionGuardResult;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
+use Allgorithm\FilamentActionGuard\Support\ActionGuardAudit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use LogicException;
 
 /**
  * Trait HasActionGuards
@@ -20,10 +22,7 @@ use Illuminate\Support\Str;
  */
 trait HasActionGuards
 {
-    /**
-     * Set to true to temporarily bypass action guard enforcement.
-     */
-    public bool $skipActionGuards = false;
+    private static int $actionGuardBypassDepth = 0;
 
     /**
      * Boot the trait and register the Eloquent saving event.
@@ -43,7 +42,7 @@ trait HasActionGuards
      */
     public function enforceActionGuards(): void
     {
-        if ($this->skipActionGuards) {
+        if (! config('filament-actionguard.enabled', true) || static::$actionGuardBypassDepth > 0) {
             return;
         }
 
@@ -72,9 +71,16 @@ trait HasActionGuards
             }
         }
 
-        $result = ActionGuardResult::fromChecks($results);
+        $result = ActionGuardResult::fromChecks($results, (bool) config('filament-actionguard.fail_closed', true));
 
         if (! $result->passed) {
+            ActionGuardAudit::record('invariant_blocked', [
+                'model' => static::class,
+                'state' => $state,
+                'failed' => $result->summary['failed'],
+                'errors' => $result->summary['errors'],
+            ]);
+
             throw StateInvariantViolationException::fromResult($this, $state, $result);
         }
     }
@@ -126,15 +132,19 @@ trait HasActionGuards
     /**
      * Executes a callback without triggering ActionGuard checks.
      */
-    public function withoutActionGuards(callable $callback): mixed
+    public static function withoutActionGuards(callable $callback): mixed
     {
-        $previous = $this->skipActionGuards;
-        $this->skipActionGuards = true;
+        if (! config('filament-actionguard.allow_bypass', false)) {
+            throw new LogicException('ActionGuard bypasses are disabled. Set ACTIONGUARD_ALLOW_BYPASS=true only for a controlled maintenance operation.');
+        }
+
+        static::$actionGuardBypassDepth++;
+        ActionGuardAudit::record('bypass_used', ['model' => static::class]);
 
         try {
-            return $callback($this);
+            return $callback();
         } finally {
-            $this->skipActionGuards = $previous;
+            static::$actionGuardBypassDepth--;
         }
     }
 }

@@ -5,6 +5,7 @@ namespace Allgorithm\FilamentActionGuard\Checks;
 use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class MediaCheck implements ActionGuardCheckContract
 {
@@ -53,10 +54,13 @@ class MediaCheck implements ActionGuardCheckContract
                 }
             }
         } catch (\Throwable $e) {
+            $reference = (string) Str::uuid();
+            report($e);
+
             return CheckResult::error(
                 key: "media.{$this->collection}",
                 label: $label,
-                message: "MediaCheck for '{$label}' encountered an error: ".$e->getMessage()
+                message: __('filament-actionguard::ui.errors.check_failed', ['reference' => $reference])
             );
         }
 

@@ -17,7 +17,7 @@ final readonly class ActionGuardResult
     /**
      * @param  array<CheckResult>  $checks
      */
-    public static function fromChecks(array $checks): self
+    public static function fromChecks(array $checks, bool $failClosed = true): self
     {
         $passedCount = 0;
         $failedCount = 0;
@@ -35,7 +35,9 @@ final readonly class ActionGuardResult
                 }
             } elseif ($check->status === CheckStatus::ERROR) {
                 $errorCount++;
-                $overallPassed = false; // Errors always fail-closed as per spec
+                if ($failClosed) {
+                    $overallPassed = false;
+                }
             }
         }
 

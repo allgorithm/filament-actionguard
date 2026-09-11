@@ -71,7 +71,7 @@ class StateInvariantViolationException extends ValidationException
      */
     public function sendNotification(): void
     {
-        if (! class_exists(Notification::class)) {
+        if (! config('filament-actionguard.notifications', true) || ! class_exists(Notification::class)) {
             return;
         }
 

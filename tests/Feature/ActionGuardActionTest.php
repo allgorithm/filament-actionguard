@@ -124,6 +124,22 @@ it('allows execution when record is null and no checks are configured', function
         ->and($result->summary['total'])->toBe(0);
 });
 
+it('can be explicitly disabled by configuration', function () {
+    config()->set('filament-actionguard.enabled', false);
+
+    $action = ActionGuardAction::make('publish')->checks([
+        new class implements ActionGuardCheckContract
+        {
+            public function evaluate(Model $record): CheckResult
+            {
+                return CheckResult::fail('blocked', 'Blocked', 'This must not run.');
+            }
+        },
+    ]);
+
+    expect($action->evaluateChecks(new class extends Model {})->passed)->toBeTrue();
+});
+
 it('catches check exceptions during evaluateChecks and fails closed', function () {
     $action = ActionGuardAction::make('publish')
         ->checks([

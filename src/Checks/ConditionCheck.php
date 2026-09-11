@@ -6,6 +6,7 @@ use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ConditionCheck implements ActionGuardCheckContract
 {
@@ -69,10 +70,13 @@ class ConditionCheck implements ActionGuardCheckContract
         try {
             $passed = (bool) call_user_func($this->condition, $record);
         } catch (\Throwable $e) {
+            $reference = (string) Str::uuid();
+            report($e);
+
             return CheckResult::error(
                 key: $this->key,
                 label: $label,
-                message: "ConditionCheck '{$this->key}' encountered an error: ".$e->getMessage()
+                message: __('filament-actionguard::ui.errors.check_failed', ['reference' => $reference])
             );
         }
 

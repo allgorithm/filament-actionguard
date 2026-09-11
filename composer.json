@@ -65,7 +65,7 @@
             "pestphp/pest-plugin": true
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "suggest": {
         "allgorithm/business-core": "Required only for the licensed Enterprise Bridge (^1.2); Community checks work without it."

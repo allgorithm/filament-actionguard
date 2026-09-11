@@ -32,7 +32,8 @@ it('returns error when callback throws an exception', function () {
     $result = $check->evaluate($model);
 
     expect($result->status)->toBe(CheckStatus::ERROR)
-        ->and($result->message)->toContain('Callback crashed unexpectedly');
+        ->and($result->message)->not->toContain('Callback crashed unexpectedly')
+        ->and($result->message)->toContain('Reference:');
 });
 
 it('returns error when callback does not return a CheckResult instance', function () {

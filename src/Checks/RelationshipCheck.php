@@ -6,6 +6,7 @@ use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class RelationshipCheck implements ActionGuardCheckContract
 {
@@ -49,10 +50,13 @@ class RelationshipCheck implements ActionGuardCheckContract
         try {
             $relationValue = $record->getRelationValue($this->relationship);
         } catch (\Throwable $e) {
+            $reference = (string) Str::uuid();
+            report($e);
+
             return CheckResult::error(
                 key: $this->relationship,
                 label: $label,
-                message: "Relationship '{$this->relationship}' could not be resolved: ".$e->getMessage()
+                message: __('filament-actionguard::ui.errors.check_failed', ['reference' => $reference])
             );
         }
 

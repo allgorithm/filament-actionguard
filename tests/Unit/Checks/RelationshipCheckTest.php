@@ -67,7 +67,8 @@ it('returns error status when relationship resolution throws an exception', func
     $result = $check->evaluate($model);
 
     expect($result->status)->toBe(CheckStatus::ERROR)
-        ->and($result->message)->toContain('could not be resolved');
+        ->and($result->message)->not->toContain('Database query failed for relation')
+        ->and($result->message)->toContain('Reference:');
 });
 
 it('respects optional setting in RelationshipCheck', function () {

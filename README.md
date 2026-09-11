@@ -6,7 +6,7 @@
     <a href="https://packagist.org/packages/allgorithm/filament-actionguard"><img src="https://img.shields.io/packagist/v/allgorithm/filament-actionguard.svg?style=flat-square&color=0ea5e9" alt="Latest Version on Packagist"></a>
     <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.3%20--%208.5-777BB4.svg?style=flat-square&logo=php&logoColor=white" alt="PHP 8.3 - 8.5"></a>
     <a href="https://filamentphp.com"><img src="https://img.shields.io/badge/Filament-v5.x-FDAE4B.svg?style=flat-square&logo=laravel&logoColor=white" alt="Filament v5"></a>
-    <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-98%20Tests%20Passing-10b981.svg?style=flat-square&logo=pest" alt="Pest Tests"></a>
+    <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-103%20Tests%20Passing-10b981.svg?style=flat-square&logo=pest" alt="Pest Tests"></a>
     <a href="https://phpstan.org"><img src="https://img.shields.io/badge/PHPStan-Level%208%20(0%20errors)-6366f1.svg?style=flat-square" alt="PHPStan Level 8"></a>
     <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-gray.svg?style=flat-square" alt="License MIT"></a>
 </p>
@@ -62,7 +62,7 @@ ActionGuard introduces a robust **Two-Phase Invariant Defense System**:
   - `MediaCheck`: Checks media collections (Spatie MediaLibrary or file upload paths).
   - `CallbackCheck`: Flexible check with full `CheckResult` control.
 - 🌍 **Fully Localized (i18n):** Complete English and German translations included out-of-the-box.
-- 💎 **Bulletproof Quality:** PHPStan **Level 8** (0 errors), 100% PSR-12 code style, and 98 comprehensive Pest tests.
+- 💎 **Bulletproof Quality:** PHPStan **Level 8** (0 errors), 100% PSR-12 code style, and 103 comprehensive Pest tests.
 
 ---
 
@@ -181,6 +181,10 @@ Product::withoutActionGuards(function () use ($product) {
 });
 ```
 
+Bypasses are disabled by default. Enable `ACTIONGUARD_ALLOW_BYPASS=true` only
+for a controlled maintenance operation; the bypass is scoped to that callback
+and can emit a data-minimised audit event.
+
 ---
 
 ### 3. Single Source of Truth (`forState`)
@@ -227,18 +231,31 @@ ActionGuardAction::make('publish')
 ActionGuard is built with strict quality standards:
 
 ```bash
-# Run automated test suite (98 tests, 225 assertions)
+# Run automated test suite (103 tests, 234 assertions)
 composer test
 
 # Run code style fixer and static analysis (PHPStan Level 8)
 composer lint
 ```
 
+## Production safeguards
+
+ActionGuard is an invariant check, not an authorization, tenancy, or database
+constraint system. Enforce authorization with Laravel policies and ensure that
+critical bulk writes do not use `Model::where(...)->update()`, because Eloquent
+does not dispatch model events for mass updates. For invariants that must hold
+against every write path, add database constraints or enforce writes through an
+application service. In production, keep `ACTIONGUARD_FAIL_CLOSED=true`, use a
+unique `APP_KEY`, disable debug mode, enable secure cookies for HTTPS, and route
+the optional data-minimised audit channel to your central logging system.
+
 ---
 
 ## 📄 License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+The project artwork was generated with AI; see [artwork attribution](art/ATTRIBUTION.md).
 
 ---
 
