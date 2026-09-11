@@ -6,12 +6,14 @@ use Allgorithm\FilamentActionGuard\Bridge\EnterpriseBridgeResolver;
 use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Results\ActionGuardResult;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
+use Allgorithm\FilamentActionGuard\Support\ActionGuardAudit;
 use Filament\Actions\Action;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class ActionGuardAction extends Action
 {
@@ -30,7 +32,7 @@ class ActionGuardAction extends Action
         $this->modalWidth('lg');
 
         $rawLabel = $this->getLabel();
-        $label = $rawLabel instanceof Htmlable ? $rawLabel->toHtml() : (string) ($rawLabel ?? '');
+        $label = $rawLabel instanceof Htmlable ? strip_tags($rawLabel->toHtml()) : (string) ($rawLabel ?? '');
         $this->modalHeading(__('filament-actionguard::ui.modal.heading', ['label' => $label]));
         $this->modalContent(function (ActionGuardAction $action, ?Model $record) {
             return $action->evaluateAndRender($record);
@@ -62,7 +64,11 @@ class ActionGuardAction extends Action
     {
         $this->checks = array_map(function ($check) {
             if (is_string($check) && class_exists($check)) {
-                return app($check);
+                $check = app($check);
+            }
+
+            if (! $check instanceof ActionGuardCheckContract) {
+                throw new InvalidArgumentException('Every ActionGuard check must implement '.ActionGuardCheckContract::class.'.');
             }
 
             return $check;
@@ -104,6 +110,10 @@ class ActionGuardAction extends Action
 
     public function evaluateChecks(?Model $record): ActionGuardResult
     {
+        if (! config('filament-actionguard.enabled', true)) {
+            return ActionGuardResult::fromChecks([]);
+        }
+
         $checks = $this->checks;
 
         // Auto-resolve guards from model if none were explicitly set and model uses HasActionGuards
@@ -120,7 +130,7 @@ class ActionGuardAction extends Action
                         label: __('filament-actionguard::ui.errors.record_label'),
                         message: __('filament-actionguard::ui.errors.record_missing'),
                     ),
-                ]);
+                ], (bool) config('filament-actionguard.fail_closed', true));
             }
 
             return ActionGuardResult::fromChecks([]);
@@ -142,7 +152,15 @@ class ActionGuardAction extends Action
             }
         }
 
-        return ActionGuardResult::fromChecks($results);
+        $result = ActionGuardResult::fromChecks($results, (bool) config('filament-actionguard.fail_closed', true));
+
+        ActionGuardAudit::record('action_evaluated', [
+            'passed' => $result->passed,
+            'failed' => $result->summary['failed'],
+            'errors' => $result->summary['errors'],
+        ]);
+
+        return $result;
     }
 
     public function evaluateAndRender(?Model $record): HtmlString|View|string

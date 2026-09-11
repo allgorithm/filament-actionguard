@@ -55,6 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Developer Experience & Tooling**
   - Root `artisan` CLI bridge to Orchestra Testbench and Workbench environment.
-  - Comprehensive test suite with 98 Pest tests and 225 assertions covering architecture, unit checks, traits, enterprise bridge hardening, and demo product scenarios.
+  - Comprehensive test suite with 103 Pest tests and 234 assertions covering architecture, unit checks, traits, enterprise bridge hardening, and demo product scenarios.
 
 [1.0.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.0.0

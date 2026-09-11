@@ -160,13 +160,22 @@ it('allows bypassing guards using withoutActionGuards callback', function () {
 
     $article->image_url = null;
 
-    $saved = $article->withoutActionGuards(function ($item) {
-        return $item->save();
+    config()->set('filament-actionguard.allow_bypass', true);
+
+    $saved = TestArticle::withoutActionGuards(function () use ($article) {
+        return $article->save();
     });
 
     expect($saved)->toBeTrue();
     $article->refresh();
     expect($article->image_url)->toBeNull();
+});
+
+it('rejects bypasses unless explicitly enabled', function () {
+    config()->set('filament-actionguard.allow_bypass', false);
+
+    expect(fn () => TestArticle::withoutActionGuards(fn () => null))
+        ->toThrow(LogicException::class);
 });
 
 it('supports custom state column names', function () {

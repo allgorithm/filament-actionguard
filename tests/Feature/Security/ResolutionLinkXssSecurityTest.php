@@ -168,6 +168,19 @@ it('allows safe HTTPS and local relative URLs and sets noopener noreferrer', fun
         ->and($html)->toContain('Review compliance documents');
 })->with([
     'https://billing.example.com/invoice/123',
-    'http://localhost:8000/fix',
     '/admin/compliance/review',
 ]);
+
+it('blocks HTTP resolution URLs unless the explicit compatibility switch is enabled', function () {
+    SecTestMaliciousGuard::$payloadUrl = 'http://localhost:8000/fix';
+    SecTestMaliciousGuard::$payloadLabel = 'Local compatibility link';
+
+    $action = ActionGuardAction::make('publish')->operation(SecTestMaliciousOperation::class);
+    expect($action->evaluateAndRender(new class extends Model {})->render())
+        ->not->toContain('href="http://localhost:8000/fix"');
+
+    config()->set('filament-actionguard.allow_insecure_resolution_urls', true);
+
+    expect($action->evaluateAndRender(new class extends Model {})->render())
+        ->toContain('href="http://localhost:8000/fix"');
+});

@@ -59,8 +59,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.3', '8.4', '8.5']
-        stability: ['prefer-stable']
+        include:
+          - php: '8.3'
+            stability: 'prefer-stable'
+          - php: '8.4'
+            stability: 'prefer-stable'
+          - php: '8.5'
+            stability: 'prefer-stable'
+          - php: '8.3'
+            stability: 'prefer-lowest'
 
     steps:
       - name: Checkout code
@@ -82,4 +89,26 @@ jobs:
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --ansi
 
       - name: Execute tests
+        run: vendor/bin/pest --ci
+
+  locked-test:
+    name: PHP 8.3 - locked dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+          coverage: none
+
+      - name: Install locked dependencies
+        run: composer install --prefer-dist --no-interaction --ansi
+
+      - name: Execute tests against the release lockfile
         run: vendor/bin/pest --ci

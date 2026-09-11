@@ -155,6 +155,11 @@ class BusinessCoreGuardAdapter implements ActionGuardCheckContract
 
         $scheme = parse_url($url, PHP_URL_SCHEME);
 
-        return in_array(strtolower((string) $scheme), ['https', 'http'], true) ? $url : null;
+        $allowedSchemes = ['https'];
+        if (config('filament-actionguard.allow_insecure_resolution_urls', false)) {
+            $allowedSchemes[] = 'http';
+        }
+
+        return in_array(strtolower((string) $scheme), $allowedSchemes, true) ? $url : null;
     }
 }

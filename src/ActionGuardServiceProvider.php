@@ -26,6 +26,7 @@ class ActionGuardServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('filament-actionguard')
+            ->hasConfigFile()
             ->hasTranslations()
             ->hasViews();
     }

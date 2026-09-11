@@ -47,7 +47,8 @@ it('returns error when condition closure throws an exception', function () {
     $result = $check->evaluate($model);
 
     expect($result->status)->toBe(CheckStatus::ERROR)
-        ->and($result->message)->toContain('Database connection lost during condition');
+        ->and($result->message)->not->toContain('Database connection lost during condition')
+        ->and($result->message)->toContain('Reference:');
 });
 
 it('respects optional setting in ConditionCheck', function () {

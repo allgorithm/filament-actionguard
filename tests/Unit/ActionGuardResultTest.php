@@ -45,3 +45,12 @@ it('fails closed when any check produces an error', function () {
     expect($result->passed)->toBeFalse()
         ->and($result->summary['errors'])->toBe(1);
 });
+
+it('can explicitly fail open for check execution errors', function () {
+    $result = ActionGuardResult::fromChecks([
+        CheckResult::error('unavailable', 'Unavailable', 'The dependency is unavailable.'),
+    ], failClosed: false);
+
+    expect($result->passed)->toBeTrue()
+        ->and($result->summary['errors'])->toBe(1);
+});

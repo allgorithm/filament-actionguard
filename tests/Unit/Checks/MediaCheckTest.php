@@ -96,7 +96,8 @@ it('returns error when getMedia() throws an exception', function () {
     $result = $check->evaluate($model);
 
     expect($result->status)->toBe(CheckStatus::ERROR)
-        ->and($result->message)->toContain('Media library disk unreachable');
+        ->and($result->message)->not->toContain('Media library disk unreachable')
+        ->and($result->message)->toContain('Reference:');
 });
 
 it('respects optional setting in MediaCheck', function () {

@@ -6,6 +6,7 @@ use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class CallbackCheck implements ActionGuardCheckContract
 {
@@ -57,10 +58,13 @@ class CallbackCheck implements ActionGuardCheckContract
 
             return $result;
         } catch (\Throwable $e) {
+            $reference = (string) Str::uuid();
+            report($e);
+
             return CheckResult::error(
                 key: $this->key,
                 label: $label,
-                message: "CallbackCheck '{$this->key}' encountered an error: ".$e->getMessage()
+                message: __('filament-actionguard::ui.errors.check_failed', ['reference' => $reference])
             );
         }
     }
