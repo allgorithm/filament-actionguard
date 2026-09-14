@@ -6,7 +6,7 @@
     <a href="https://packagist.org/packages/allgorithm/filament-actionguard"><img src="https://img.shields.io/packagist/v/allgorithm/filament-actionguard.svg?style=flat-square&color=0ea5e9" alt="Latest Version on Packagist"></a>
     <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.3%20--%208.5-777BB4.svg?style=flat-square&logo=php&logoColor=white" alt="PHP 8.3 - 8.5"></a>
     <a href="https://filamentphp.com"><img src="https://img.shields.io/badge/Filament-v5.x-FDAE4B.svg?style=flat-square&logo=laravel&logoColor=white" alt="Filament v5"></a>
-    <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-132%20Tests%20Passing-10b981.svg?style=flat-square&logo=pest" alt="Pest Tests"></a>
+    <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-133%20Tests%20Passing-10b981.svg?style=flat-square&logo=pest" alt="Pest Tests"></a>
     <a href="https://phpstan.org"><img src="https://img.shields.io/badge/PHPStan-Level%208%20(0%20errors)-6366f1.svg?style=flat-square" alt="PHPStan Level 8"></a>
     <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-gray.svg?style=flat-square" alt="License MIT"></a>
 </p>
@@ -62,7 +62,7 @@ ActionGuard introduces a robust **Two-Phase Invariant Defense System**:
   - `MediaCheck`: Checks media collections (Spatie MediaLibrary or file upload paths).
   - `CallbackCheck`: Flexible check with full `CheckResult` control.
 - 🌍 **Fully Localized (i18n):** Complete English and German translations included out-of-the-box.
-- 💎 **Bulletproof Quality:** PHPStan **Level 8** (0 errors), 100% PSR-12 code style, and 132 comprehensive Pest tests.
+- 💎 **Bulletproof Quality:** PHPStan **Level 8** (0 errors), 100% PSR-12 code style, and 133 comprehensive Pest tests.
 
 ## Compatibility
 
@@ -248,6 +248,8 @@ The operational defaults and environment variables are:
 | `notifications` | `ACTIONGUARD_NOTIFICATIONS_ENABLED` | `true` |
 | `audit.enabled` | `ACTIONGUARD_AUDIT_TRAIL` | `false` |
 | `audit.channel` | `ACTIONGUARD_AUDIT_CHANNEL` | `null` |
+| `audit.include_model_type` | `ACTIONGUARD_AUDIT_INCLUDE_MODEL_TYPE` | `false` |
+| `audit.include_state` | `ACTIONGUARD_AUDIT_INCLUDE_STATE` | `false` |
 | `allow_insecure_resolution_urls` | `ACTIONGUARD_ALLOW_INSECURE_RESOLUTION_URLS` | `false` |
 
 Resolution links accept local absolute paths and HTTPS URLs. HTTP is available
@@ -265,7 +267,7 @@ side-effect-free and safe to run repeatedly. The final evaluation is decisive.
 ActionGuard is built with strict quality standards:
 
 ```bash
-# Run automated test suite (132 tests, 308 assertions)
+# Run automated test suite (133 tests, 315 assertions)
 composer test
 
 # Run code style fixer and static analysis (PHPStan Level 8)
@@ -289,7 +291,9 @@ the optional data-minimised audit channel to your central logging system.
 
 Filament ActionGuard was designed with data minimisation in mind. The package
 does not transmit record data to external services and its optional audit events
-exclude model attributes, record IDs, actor IDs, and check messages by default.
+exclude model types, state values, record IDs, actor IDs, check messages, and
+arbitrary model attributes by default. Model type and state can be enabled
+independently when an application's documented audit purpose requires them.
 
 Whether a deployment complies with the GDPR / DSGVO depends on the operator's
 specific processing purposes, legal basis, access controls, logging and

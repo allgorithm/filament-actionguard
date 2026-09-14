@@ -21,6 +21,30 @@ final class ActionGuardAudit
         }
 
         Log::channel(config('filament-actionguard.audit.channel'))
-            ->notice('filament-actionguard.'.$event, $context);
+            ->notice('filament-actionguard.'.$event, self::filterContext($event, $context));
+    }
+
+    /**
+     * @param  array<string, scalar|null>  $context
+     * @return array<string, scalar|null>
+     */
+    private static function filterContext(string $event, array $context): array
+    {
+        $allowedKeys = match ($event) {
+            'action_evaluated' => ['passed', 'failed', 'errors'],
+            'invariant_blocked' => ['failed', 'errors'],
+            default => [],
+        };
+
+        if (config('filament-actionguard.audit.include_model_type', false)
+            && in_array($event, ['invariant_blocked', 'bypass_used'], true)) {
+            $allowedKeys[] = 'model';
+        }
+
+        if (config('filament-actionguard.audit.include_state', false) && $event === 'invariant_blocked') {
+            $allowedKeys[] = 'state';
+        }
+
+        return array_intersect_key($context, array_flip($allowedKeys));
     }
 }

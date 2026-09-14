@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-14
+
 ### Added
 
 - Publishable runtime configuration for enablement, fail-closed behavior,
   notifications, guarded bypasses, audit logging, and resolution URL policy.
 - Data-minimised structured audit events for action evaluation, invariant
   blocking, and explicitly enabled bypass usage.
+- Independent, disabled-by-default audit opt-ins for model types and state values;
+  unknown context fields are removed by a central event allow-list.
 - Locked and prefer-lowest dependency verification in CI.
 - Privacy responsibility and AI-generated artwork disclosures.
 - Central resolution URL sanitization shared by Community and Enterprise checks.
@@ -89,7 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Developer Experience & Tooling**
   - Root `artisan` CLI bridge to Orchestra Testbench and Workbench environment.
-  - Comprehensive test suite with 132 Pest tests and 308 assertions covering architecture, unit checks, traits, enterprise bridge hardening, Livewire integration, security, and demo product scenarios.
+  - Comprehensive test suite with 133 Pest tests and 315 assertions covering architecture, unit checks, traits, enterprise bridge hardening, Livewire integration, security, and demo product scenarios.
 
 [1.0.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.0.0
-[Unreleased]: https://github.com/allgorithm/filament-actionguard/compare/v1.0.0...HEAD
+[1.3.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.3.0
+[Unreleased]: https://github.com/allgorithm/filament-actionguard/compare/v1.3.0...HEAD
