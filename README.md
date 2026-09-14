@@ -214,8 +214,21 @@ ActionGuardAction::make('publish')
 | `NotEmptyCheck` | Value is not empty string/whitespace/empty array/empty collection (safely preserves `0`, `'0'`, `0.00`) | `NotEmptyCheck::make('price')` |
 | `ConditionCheck` | Boolean callback closure | `ConditionCheck::make('min_stock', fn ($record) => $record->stock > 0, 'Stock must be greater than zero')` |
 | `RelationshipCheck` | Eloquent relationship resolves to a model or non-empty collection; it may lazy-load the relation | `RelationshipCheck::make('category')` |
-| `MediaCheck` | Spatie MediaLibrary or array of image URLs | `MediaCheck::make('image_url')` |
-| `CallbackCheck` | Evaluates custom logic returning `CheckResult` | `CallbackCheck::make('vat_id', fn ($record) => ...)` |
+| `MediaCheck` | Non-empty Spatie MediaLibrary collection, string attribute, or array attribute | `MediaCheck::make('image_url')` |
+| `CallbackCheck` | Evaluates custom logic that returns a `CheckResult` | `CallbackCheck::make('vat_id')->check(...)` |
+
+`CallbackCheck` callbacks must return a `CheckResult` explicitly:
+
+```php
+use Allgorithm\FilamentActionGuard\Checks\CallbackCheck;
+use Allgorithm\FilamentActionGuard\Results\CheckResult;
+
+CallbackCheck::make('vat_id')->check(function ($record): CheckResult {
+    return filled($record->vat_id)
+        ? CheckResult::pass('vat_id', 'VAT ID')
+        : CheckResult::fail('vat_id', 'VAT ID', 'A VAT ID is required.');
+});
+```
 
 ---
 
