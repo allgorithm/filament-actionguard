@@ -4,6 +4,7 @@ use Allgorithm\FilamentActionGuard\Actions\ActionGuardAction;
 use Allgorithm\FilamentActionGuard\Bridge\BusinessCoreContractMap;
 use Allgorithm\FilamentActionGuard\Bridge\EnterpriseBridgeResolver;
 use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
+use Allgorithm\FilamentActionGuard\Results\CheckResolution;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Illuminate\Database\Eloquent\Model;
 
@@ -153,6 +154,57 @@ it('escapes raw strings passed directly to CheckResult resolution', function () 
 
     expect($html)->not->toContain('<b onmouseover="alert(1)">')
         ->and($html)->toContain('&lt;b onmouseover=&quot;alert(1)&quot;&gt;Hover me&lt;/b&gt;');
+});
+
+it('blocks unsafe urls passed directly through CheckResolution', function (string $dangerousUrl) {
+    $action = ActionGuardAction::make('publish')->checks([
+        new class($dangerousUrl) implements ActionGuardCheckContract
+        {
+            public function __construct(private readonly string $dangerousUrl) {}
+
+            public function evaluate(Model $record): CheckResult
+            {
+                return CheckResult::fail(
+                    key: 'direct_resolution',
+                    label: 'Direct resolution',
+                    message: 'Blocked',
+                    resolution: new CheckResolution('Fix record', $this->dangerousUrl),
+                );
+            }
+        },
+    ]);
+
+    $html = $action->evaluateAndRender(new class extends Model {})->render();
+
+    expect($html)->not->toContain($dangerousUrl)
+        ->and($html)->not->toContain('href=');
+})->with([
+    'javascript:alert(1)',
+    'JAVASCRIPT:alert(document.cookie)',
+    'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+    'vbscript:msgbox(1)',
+    '//attacker.example/phishing',
+    "https://example.com\r\nX-Injected: header",
+    "https://example.com\0evil",
+    'relative/path-without-leading-slash',
+]);
+
+it('allows safe urls passed directly through CheckResolution', function (string $safeUrl) {
+    $resolution = new CheckResolution('Fix record', $safeUrl);
+
+    expect($resolution->url)->toBe($safeUrl);
+})->with([
+    'https://example.com/admin/fix',
+    '/admin/fix',
+]);
+
+it('allows direct HTTP resolutions only after the compatibility opt-in', function () {
+    expect((new CheckResolution('Fix record', 'http://localhost/fix'))->url)->toBeNull();
+
+    config()->set('filament-actionguard.allow_insecure_resolution_urls', true);
+
+    expect((new CheckResolution('Fix record', 'http://localhost/fix'))->url)
+        ->toBe('http://localhost/fix');
 });
 
 it('allows safe HTTPS and local relative URLs and sets noopener noreferrer', function (string $safeUrl) {

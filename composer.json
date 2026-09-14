@@ -73,6 +73,32 @@
     "suggest": {
         "allgorithm/business-core": "Required only for the licensed Enterprise Bridge (^1.2); Community checks work without it."
     },
+    "archive": {
+        "exclude": [
+            "/.ai",
+            "/.github",
+            "/art",
+            "/artisan",
+            "/build",
+            "/docker",
+            "/docker-compose.yml",
+            "/docs",
+            "/public",
+            "/requirements",
+            "/storage",
+            "/tests",
+            "/vendor",
+            "/workbench",
+            "/.DS_Store",
+            "/.env",
+            "/.env.example",
+            "/.gitattributes",
+            "/.gitignore",
+            "/phpstan.neon",
+            "/phpunit.xml.dist",
+            "/testbench.yaml"
+        ]
+    },
     "scripts": {
         "post-autoload-dump": [
             "@clear",

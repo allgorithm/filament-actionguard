@@ -5,6 +5,44 @@ All notable changes to `filament-actionguard` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.3.0] - 2026-09-14
+
+### Added
+
+- Publishable runtime configuration for enablement, fail-closed behavior,
+  notifications, guarded bypasses, audit logging, and resolution URL policy.
+- Data-minimised structured audit events for action evaluation, invariant
+  blocking, and explicitly enabled bypass usage.
+- Independent, disabled-by-default audit opt-ins for model types and state values;
+  unknown context fields are removed by a central event allow-list.
+- Locked and prefer-lowest dependency verification in CI.
+- Privacy responsibility and AI-generated artwork disclosures.
+- Central resolution URL sanitization shared by Community and Enterprise checks.
+- Filament Livewire integration coverage for table actions, page header actions,
+  modal halting, model validation errors, and notification configuration.
+
+### Changed
+
+- Composer now resolves stable dependencies by default and locks against the
+  minimum supported PHP 8.3 platform.
+- ActionGuard bypasses are disabled by default and scoped to their callback.
+- Resolution links allow HTTPS and relative URLs by default; HTTP requires an
+  explicit compatibility opt-in.
+- Security policy now documents supported versions and response expectations.
+- The local environment example now contains only Workbench and ActionGuard
+  settings and keeps audit logging disabled by default.
+
+### Security
+
+- Check exceptions are reported server-side with correlation IDs instead of
+  exposing internal exception messages in the Filament interface.
+- Explicit checks are validated against `ActionGuardCheckContract`, and rich
+  action labels are stripped of HTML before use as modal headings.
+- Direct `CheckResolution` URLs now use the same scheme allow-list and malformed
+  URL rejection as Enterprise resolutions.
+
 ## [1.0.0] - 2026-09-11
 
 ### Added
@@ -20,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `RequiredFieldCheck`: Validates presence and non-null status of critical model attributes.
   - `NotEmptyCheck`: Validates strings, arrays, and collections with precise numeric zero (`0`, `'0'`, `0.00`) preservation.
   - `ConditionCheck`: Custom boolean and closure-based rule evaluations with contextual failure messages.
-  - `RelationshipCheck`: Ensures required relationships exist and meet minimum count constraints.
+  - `RelationshipCheck`: Ensures required relationships resolve to a model or non-empty collection.
   - `MediaCheck`: Verifies attachments via Spatie MediaLibrary collections or standard URL/path attributes.
   - `CallbackCheck`: Flexible closure-driven check returning custom `CheckResult` instances with explicit severity and descriptions.
 
@@ -55,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Developer Experience & Tooling**
   - Root `artisan` CLI bridge to Orchestra Testbench and Workbench environment.
-  - Comprehensive test suite with 103 Pest tests and 234 assertions covering architecture, unit checks, traits, enterprise bridge hardening, and demo product scenarios.
+  - Comprehensive test suite with 133 Pest tests and 315 assertions covering architecture, unit checks, traits, enterprise bridge hardening, Livewire integration, security, and demo product scenarios.
 
 [1.0.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.0.0
+[1.3.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.3.0
+[Unreleased]: https://github.com/allgorithm/filament-actionguard/compare/v1.3.0...HEAD

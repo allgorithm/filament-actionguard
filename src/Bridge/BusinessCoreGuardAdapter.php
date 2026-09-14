@@ -9,6 +9,7 @@ use Allgorithm\FilamentActionGuard\Contracts\OperationContextFactoryContract;
 use Allgorithm\FilamentActionGuard\Results\CheckResolution;
 use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Allgorithm\FilamentActionGuard\Results\CheckStatus;
+use Allgorithm\FilamentActionGuard\Support\ResolutionUrlSanitizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -106,7 +107,7 @@ class BusinessCoreGuardAdapter implements ActionGuardCheckContract
                 $resolution = $coreResult->resolution;
             } elseif (is_object($coreResult->resolution) && property_exists($coreResult->resolution, 'label')) {
                 $action = property_exists($coreResult->resolution, 'action')
-                    ? $this->sanitizeResolutionUrl($coreResult->resolution->action)
+                    ? ResolutionUrlSanitizer::sanitize($coreResult->resolution->action)
                     : null;
                 $resolution = new CheckResolution(
                     label: (string) $coreResult->resolution->label,
@@ -136,30 +137,5 @@ class BusinessCoreGuardAdapter implements ActionGuardCheckContract
             $this->contracts,
             $correlationId,
         );
-    }
-
-    protected function sanitizeResolutionUrl(mixed $url): ?string
-    {
-        if (! is_string($url)) {
-            return null;
-        }
-
-        $url = trim($url);
-        if ($url === '' || preg_match('/[\x00-\x20\x7F\\\\]/', $url) === 1 || str_starts_with($url, '//')) {
-            return null;
-        }
-
-        if (str_starts_with($url, '/')) {
-            return $url;
-        }
-
-        $scheme = parse_url($url, PHP_URL_SCHEME);
-
-        $allowedSchemes = ['https'];
-        if (config('filament-actionguard.allow_insecure_resolution_urls', false)) {
-            $allowedSchemes[] = 'http';
-        }
-
-        return in_array(strtolower((string) $scheme), $allowedSchemes, true) ? $url : null;
     }
 }
