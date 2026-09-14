@@ -31,9 +31,12 @@ class ActionGuardAction extends Action
         $this->modalDescription(null);
         $this->modalWidth('lg');
 
-        $rawLabel = $this->getLabel();
-        $label = $rawLabel instanceof Htmlable ? strip_tags($rawLabel->toHtml()) : (string) ($rawLabel ?? '');
-        $this->modalHeading(__('filament-actionguard::ui.modal.heading', ['label' => $label]));
+        $this->modalHeading(function (): string {
+            $rawLabel = $this->getLabel();
+            $label = $rawLabel instanceof Htmlable ? strip_tags($rawLabel->toHtml()) : (string) ($rawLabel ?? '');
+
+            return __('filament-actionguard::ui.modal.heading', ['label' => $label]);
+        });
         $this->modalContent(function (ActionGuardAction $action, ?Model $record) {
             return $action->evaluateAndRender($record);
         });

@@ -4,7 +4,9 @@ use Allgorithm\FilamentActionGuard\Actions\ActionGuardAction;
 use Allgorithm\FilamentActionGuard\Checks\MediaCheck;
 use Allgorithm\FilamentActionGuard\Checks\NotEmptyCheck;
 use Allgorithm\FilamentActionGuard\Checks\RequiredFieldCheck;
+use Allgorithm\FilamentActionGuard\Contracts\ActionGuardCheckContract;
 use Allgorithm\FilamentActionGuard\Exceptions\StateInvariantViolationException;
+use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Allgorithm\FilamentActionGuard\Traits\HasActionGuards;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
@@ -71,6 +73,30 @@ class TestComment extends Model
         return [
             'approved' => [
                 NotEmptyCheck::make('content')->label('Comment Content'),
+            ],
+        ];
+    }
+}
+
+class TestTechnicalArticle extends Model
+{
+    use HasActionGuards;
+
+    protected $table = 'test_articles';
+
+    protected $guarded = [];
+
+    public function actionGuards(): array
+    {
+        return [
+            'published' => [
+                new class implements ActionGuardCheckContract
+                {
+                    public function evaluate(Model $record): CheckResult
+                    {
+                        throw new RuntimeException('technical model guard outage');
+                    }
+                },
             ],
         ];
     }
@@ -207,4 +233,75 @@ it('enables ActionGuardAction to automatically resolve checks from model when us
     expect($result->checks)->toHaveCount(3)
         ->and($result->passed)->toBeFalse()
         ->and($result->summary['failed'])->toBe(1); // image_url fails
+});
+
+it('can disable model invariant enforcement through configuration', function () {
+    config()->set('filament-actionguard.enabled', false);
+    $article = new TestArticle([
+        'status' => 'published',
+        'title' => null,
+        'slug' => null,
+        'image_url' => null,
+    ]);
+
+    expect($article->save())->toBeTrue();
+});
+
+it('allows a model save after a technical error only with explicit fail-open configuration', function () {
+    config()->set('filament-actionguard.fail_closed', false);
+    $article = new TestTechnicalArticle([
+        'status' => 'published',
+        'title' => 'Technically unchecked',
+    ]);
+
+    expect($article->save())->toBeTrue();
+});
+
+it('does not dispatch a notification when notifications are disabled', function () {
+    config()->set('filament-actionguard.notifications', false);
+    session()->forget('filament.notifications');
+    $article = new TestArticle([
+        'status' => 'published',
+        'title' => null,
+        'slug' => null,
+        'image_url' => null,
+    ]);
+
+    expect(fn () => $article->save())->toThrow(StateInvariantViolationException::class)
+        ->and(session()->get('filament.notifications'))->toBeNull();
+});
+
+it('restores invariant enforcement when a bypass callback throws', function () {
+    config()->set('filament-actionguard.allow_bypass', true);
+
+    expect(fn () => TestArticle::withoutActionGuards(fn () => throw new RuntimeException('maintenance failed')))
+        ->toThrow(RuntimeException::class, 'maintenance failed');
+
+    $article = new TestArticle([
+        'status' => 'published',
+        'title' => null,
+        'slug' => null,
+        'image_url' => null,
+    ]);
+
+    expect(fn () => $article->save())->toThrow(StateInvariantViolationException::class);
+});
+
+it('supports nested bypass callbacks and restores enforcement afterwards', function () {
+    config()->set('filament-actionguard.allow_bypass', true);
+    $article = new TestArticle([
+        'status' => 'published',
+        'title' => null,
+        'slug' => null,
+        'image_url' => null,
+    ]);
+
+    $saved = TestArticle::withoutActionGuards(
+        fn () => TestArticle::withoutActionGuards(fn () => $article->save()),
+    );
+
+    expect($saved)->toBeTrue();
+
+    $article->title = null;
+    expect(fn () => $article->save())->toThrow(StateInvariantViolationException::class);
 });

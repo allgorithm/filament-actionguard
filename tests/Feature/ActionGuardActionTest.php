@@ -6,6 +6,7 @@ use Allgorithm\FilamentActionGuard\Results\CheckResult;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 it('executes the encapsulated action when all checks pass', function () {
     $executed = false;
@@ -161,6 +162,31 @@ it('catches check exceptions during evaluateChecks and fails closed', function (
         ->and($result->checks[0]->message)->toContain('Reference:');
 });
 
+it('allows an action to continue after a technical error only with explicit fail-open configuration', function () {
+    config()->set('filament-actionguard.fail_closed', false);
+    $executed = false;
+    $record = new class extends Model {};
+    $action = ActionGuardAction::make('publish')
+        ->checks([
+            new class implements ActionGuardCheckContract
+            {
+                public function evaluate(Model $record): CheckResult
+                {
+                    throw new RuntimeException('technical outage');
+                }
+            },
+        ])
+        ->action(function () use (&$executed): void {
+            $executed = true;
+        })
+        ->record($record);
+
+    $action->callBefore();
+    $action->call(['record' => $record]);
+
+    expect($executed)->toBeTrue();
+});
+
 it('renders preflight modal view with correct result payload', function () {
     $action = ActionGuardAction::make('publish')
         ->checks([
@@ -180,4 +206,48 @@ it('renders preflight modal view with correct result payload', function () {
     $data = $rendered->getData();
     expect($data['passed'])->toBeTrue()
         ->and($data['result']->summary['passed'])->toBe(1);
+});
+
+it('rejects invalid explicit checks before evaluation', function (mixed $invalidCheck) {
+    expect(fn () => ActionGuardAction::make('publish')->checks([$invalidCheck]))
+        ->toThrow(InvalidArgumentException::class);
+})->with([
+    'object' => fn () => new stdClass,
+    'existing incompatible class string' => stdClass::class,
+    'unknown class string' => 'Tests\\MissingActionGuardCheck',
+    'scalar' => 42,
+]);
+
+it('strips HTML from a late-bound Htmlable action label in the modal heading', function () {
+    $action = ActionGuardAction::make('publish')
+        ->label(new HtmlString('<strong>Publish safely</strong><script>alert(1)</script>'));
+
+    expect($action->getModalHeading())
+        ->toBe('Publish safelyalert(1)')
+        ->not->toContain('<strong>')
+        ->not->toContain('<script>');
+});
+
+it('re-evaluates checks for rendering confirmation and the final before hook', function () {
+    $counter = (object) ['evaluations' => 0];
+    $record = new class extends Model {};
+    $action = ActionGuardAction::make('publish')->checks([
+        new class($counter) implements ActionGuardCheckContract
+        {
+            public function __construct(private readonly object $counter) {}
+
+            public function evaluate(Model $record): CheckResult
+            {
+                $this->counter->evaluations++;
+
+                return CheckResult::pass('repeatable', 'Repeatable');
+            }
+        },
+    ])->record($record);
+
+    $action->evaluateAndRender($record);
+    $action->getModalSubmitAction();
+    $action->callBefore();
+
+    expect($counter->evaluations)->toBe(3);
 });

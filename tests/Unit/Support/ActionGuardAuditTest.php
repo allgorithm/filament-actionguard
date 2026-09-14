@@ -30,3 +30,20 @@ it('writes only the supplied structured audit context to the configured channel'
         'errors' => 0,
     ]);
 });
+
+it('uses the default logger when no audit channel is configured', function () {
+    config()->set('filament-actionguard.audit.enabled', true);
+    config()->set('filament-actionguard.audit.channel');
+    Log::shouldReceive('channel')->once()->with(null)->andReturnSelf();
+    Log::shouldReceive('notice')->once()->with('filament-actionguard.action_evaluated', [
+        'passed' => true,
+        'failed' => 0,
+        'errors' => 0,
+    ]);
+
+    ActionGuardAudit::record('action_evaluated', [
+        'passed' => true,
+        'failed' => 0,
+        'errors' => 0,
+    ]);
+});
