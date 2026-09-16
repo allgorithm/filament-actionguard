@@ -9,7 +9,7 @@ updates:
       - "dependencies"
       - "php"
     cooldown:
-      default-days: 5
+      default-days: 7
       semver-major-days: 7
       semver-minor-days: 5
       semver-patch-days: 3
@@ -23,4 +23,4 @@ updates:
       - "dependencies"
       - "github-actions"
     cooldown:
-      default-days: 5
+      default-days: 7
