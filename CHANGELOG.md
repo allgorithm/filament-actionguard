@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The library no longer commits `composer.lock`; CI resolves dependencies from
+  the declared constraints for every run and audits the generated lock file.
+
+### Security
+
+- Pinned all third-party GitHub Actions to immutable full commit SHAs.
+- Added Dependabot cooldowns of at least three days for Composer and GitHub
+  Actions updates to reduce exposure to newly compromised releases.
+- Restricted GitHub Actions tokens to read-only repository contents and stopped
+  checkout credentials from persisting in the job workspace.
+
 ## [1.3.0] - 2026-09-14
 
 ### Added

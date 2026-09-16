@@ -1,5 +1,6 @@
 /vendor/
 /node_modules/
+/composer.lock
 .phpunit.result.cache
 .pest.cache
 .phpunit.cache/
@@ -24,4 +25,3 @@ Thumbs.db
 
 # Internal Requirements & Platform Specifications
 /requirements/
-

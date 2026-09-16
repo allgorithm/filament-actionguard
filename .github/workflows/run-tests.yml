@@ -11,7 +11,6 @@ on:
       - 'workbench/**'
       - 'resources/**'
       - 'composer.json'
-      - 'composer.lock'
       - 'phpunit.xml.dist'
       - '.github/workflows/run-tests.yml'
   pull_request:
@@ -24,9 +23,11 @@ on:
       - 'workbench/**'
       - 'resources/**'
       - 'composer.json'
-      - 'composer.lock'
       - 'phpunit.xml.dist'
       - '.github/workflows/run-tests.yml'
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,15 +41,20 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: '8.3'
           coverage: none
 
-      - name: Check dependency advisories
+      - name: Resolve dependency graph without installing
+        run: composer update --no-install --no-scripts --no-plugins --no-audit --prefer-stable --no-interaction --no-progress --ansi
+
+      - name: Check resolved dependency advisories
         run: composer audit --locked
 
   test:
@@ -71,10 +77,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
@@ -89,26 +97,4 @@ jobs:
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --ansi
 
       - name: Execute tests
-        run: vendor/bin/pest --ci
-
-  locked-test:
-    name: PHP 8.3 - locked dependencies
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
-          coverage: none
-
-      - name: Install locked dependencies
-        run: composer install --prefer-dist --no-interaction --ansi
-
-      - name: Execute tests against the release lockfile
         run: vendor/bin/pest --ci
