@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Marketplace thumbnail with an explicit AI-generated artwork attribution.
+
 ### Changed
 
 - The library no longer commits `composer.lock`; CI resolves dependencies from

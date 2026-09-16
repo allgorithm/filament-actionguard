@@ -1,6 +1,7 @@
 # Artwork attribution and AI disclosure
 
-`avatar.png` and `banner.png` were generated with AI for Filament ActionGuard.
+`avatar.png`, `banner.png`, and `filament-actionguard-thumbnail-v1.jpg` were
+generated with AI for Filament ActionGuard.
 
 They are project artwork, not third-party stock assets, and are distributed with
 this repository under the project MIT license. This disclosure is informational
