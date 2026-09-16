@@ -94,6 +94,7 @@
             "/.env.example",
             "/.gitattributes",
             "/.gitignore",
+            "/composer.lock",
             "/phpstan.neon",
             "/phpunit.xml.dist",
             "/testbench.yaml"
@@ -117,7 +118,10 @@
             "@php vendor/bin/phpstan analyse --verbose --ansi --memory-limit=512M"
         ],
         "format": "@php vendor/bin/pint --ansi",
-        "security-audit": "@composer audit --locked",
+        "security-audit": [
+            "@composer update --no-install --no-scripts --no-plugins --no-audit --prefer-stable --no-interaction --no-progress",
+            "@composer audit --locked"
+        ],
         "test": "@php vendor/bin/pest"
     }
 }

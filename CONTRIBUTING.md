@@ -15,8 +15,12 @@ Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/allgorithm/filament-actionguard.git
 cd filament-actionguard
-composer install
+composer update
 ```
+
+As this repository contains a reusable library, `composer.lock` is generated
+locally but is not committed. CI resolves the supported dependency ranges on
+every run, including a `prefer-lowest` test job.
 
 ### Running Tests
 
