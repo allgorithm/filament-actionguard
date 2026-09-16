@@ -8,6 +8,7 @@
     <a href="https://filamentphp.com"><img src="https://img.shields.io/badge/Filament-v5.x-FDAE4B.svg?style=flat-square&logo=laravel&logoColor=white" alt="Filament v5"></a>
     <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-133%20Tests%20Passing-10b981.svg?style=flat-square&logo=pest" alt="Pest Tests"></a>
     <a href="https://phpstan.org"><img src="https://img.shields.io/badge/PHPStan-Level%208%20(0%20errors)-6366f1.svg?style=flat-square" alt="PHPStan Level 8"></a>
+    <a href="https://plumbphp.dev/allgorithm/filament-actionguard"><img src="https://plumbphp.dev/badges/allgorithm/filament-actionguard/composite.svg" alt="Plumb score"></a>
     <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-gray.svg?style=flat-square" alt="License MIT"></a>
 </p>
 
