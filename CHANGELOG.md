@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Pinned all third-party GitHub Actions to immutable full commit SHAs.
+- Added a blocking, SHA-pinned Zizmor workflow audit with a fixed scanner
+  version for deterministic GitHub Actions security checks.
 - Added Dependabot cooldowns of at least three days for Composer and GitHub
   Actions updates to reduce exposure to newly compromised releases.
 - Restricted GitHub Actions tokens to read-only repository contents and stopped
