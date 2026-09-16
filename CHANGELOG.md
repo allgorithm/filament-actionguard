@@ -7,14 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-09-16
+
 ### Added
 
 - Marketplace thumbnail with an explicit AI-generated artwork attribution.
 
 ### Changed
 
-- The library no longer commits `composer.lock`; CI resolves dependencies from
-  the declared constraints for every run and audits the generated lock file.
+- The library no longer commits or ships `composer.lock`; CI resolves
+  dependencies from the declared constraints for every run and audits the
+  generated lock file.
 
 ### Security
 
@@ -116,4 +119,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.0.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.0.0
 [1.3.0]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.3.0
-[Unreleased]: https://github.com/allgorithm/filament-actionguard/compare/v1.3.0...HEAD
+[1.3.1]: https://github.com/allgorithm/filament-actionguard/releases/tag/v1.3.1
+[Unreleased]: https://github.com/allgorithm/filament-actionguard/compare/v1.3.1...HEAD
